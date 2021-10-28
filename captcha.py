@@ -15,6 +15,7 @@ data_dir = Path("./captcha/")
 images = sorted(list(map(str, list(data_dir.glob("*.png")))))
 labels = [img.split(os.path.sep)[-1].split(".png")[0] for img in images]
 characters = list(set(char for label in labels for char in label))
+characters.sort()
 
 print("Number of images found: ", len(images))
 print("Number of labels found: ", len(labels))
@@ -85,6 +86,7 @@ def encode_single_sample(img_path, label):
     # 7. Return a dict as our model is expecting two inputs
     return {"image": img, "label": label}
 
+
 train_dataset = tf.data.Dataset.from_tensor_slices((x_train, y_train))
 train_dataset = (
     train_dataset.map(
@@ -102,6 +104,7 @@ validation_dataset = (
     .batch(batch_size)
     .prefetch(buffer_size=tf.data.AUTOTUNE)
 )
+
 
 _, ax = plt.subplots(4, 4, figsize=(10, 5))
 for batch in train_dataset.take(1):
@@ -203,7 +206,7 @@ model = build_model()
 model.summary()
 
 
-epochs = 100
+epochs = 40
 early_stopping_patience = 10
 # Add early stopping
 early_stopping = keras.callbacks.EarlyStopping(
