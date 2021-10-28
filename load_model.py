@@ -15,6 +15,7 @@ data_dir = Path("./captcha/")
 images = sorted(list(map(str, list(data_dir.glob("*.png")))))
 labels = [img.split(os.path.sep)[-1].split(".png")[0] for img in images]
 characters = list(set(char for label in labels for char in label))
+characters.sort()
 
 print("Number of images found: ", len(images))
 print("Number of labels found: ", len(labels))
