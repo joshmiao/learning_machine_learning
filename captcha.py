@@ -240,6 +240,9 @@ def decode_batch_predictions(pred):
     return output_text
 
 
+prediction_model.save("prediction_model")
+model.save("model")
+
 #  Let's check results on some validation samples
 for batch in validation_dataset.take(1):
     batch_images = batch["image"]
