@@ -1,4 +1,4 @@
-from PIL import Image
+from PIL import Image, ImageFilter
 from PIL import ImageDraw
 from PIL import ImageFont
 import os
@@ -7,8 +7,10 @@ import random
 
 class ValidCodeImg:
     def __init__(self, width=200, height=50, code_count=5, font_size=32, point_count=20, line_count=3,
+                 background_random=True, color_random=True, is_transform=True, is_filter=True,
                  img_format='png'):
-        '''
+
+        """
         可以生成一个经过降噪后的随机验证码的图片
         :param width: 图片宽度 单位px
         :param height: 图片高度 单位px
@@ -18,7 +20,8 @@ class ValidCodeImg:
         :param line_count: 划线个数
         :param img_format: 图片格式
         :return 生成的图片的bytes类型的data
-        '''
+        """
+
         self.width = width
         self.height = height
         self.code_count = code_count
@@ -26,6 +29,10 @@ class ValidCodeImg:
         self.point_count = point_count
         self.line_count = line_count
         self.img_format = img_format
+        self.background_random = background_random
+        self.color_random = color_random
+        self.is_transform = is_transform
+        self.is_filter = is_filter
 
     @staticmethod
     def getRandomColor():
@@ -46,8 +53,10 @@ class ValidCodeImg:
 
     def getValidCodeImg(self):
         # 获取一个Image对象，参数分别是RGB模式。宽150，高30，随机颜色
-        # image = Image.new('RGB', (self.width, self.height), self.getRandomColor())
-        image = Image.new('RGB', (self.width, self.height), (255, 255, 255))
+        if self.background_random:
+            image = Image.new('RGB', (self.width, self.height), self.getRandomColor())
+        else:
+            image = Image.new('RGB', (self.width, self.height), (255, 255, 255))
         # 获取一个画笔对象，将图片对象传过去
         draw = ImageDraw.Draw(image)
 
@@ -60,8 +69,10 @@ class ValidCodeImg:
             random_char = self.getRandomStr()
 
             # 在图片上一次写入得到的随机字符串,参数是：定位，字符串，颜色，字体
-            # draw.text((10 + i * 30, -2), random_char, self.getRandomColor(), font=font)
-            draw.text((10 + i * 30, -2), random_char, (0, 0, 0), font=font)
+            if self.color_random:
+                draw.text((10 + i * 30, -2), random_char, self.getRandomColor(), font=font)
+            else:
+                draw.text((10 + i * 25, -2), random_char, (0, 0, 0), font=font)
             # 保存随机字符，以供验证用户输入的验证码是否正确时使用
             temp.append(random_char)
         valid_str = "".join(temp)
@@ -82,6 +93,21 @@ class ValidCodeImg:
             y = random.randint(0, self.height)
             draw.arc((x, y, x + 4, y + 4), 0, 90, fill=self.getRandomColor())
 
+        if self.is_transform:
+            params = [1 - float(random.randint(1, 2)) / 100,
+                      0,
+                      0,
+                      0,
+                      1 - float(random.randint(1, 10)) / 100,
+                      float(random.randint(1, 2)) / 500,
+                      0.001,
+                      float(random.randint(1, 2)) / 500
+                      ]
+            image = image.transform((self.width, self.height), Image.PERSPECTIVE, params)  # 创建扭曲
+        if self.is_filter:
+            image = image.filter(ImageFilter.EDGE_ENHANCE_MORE)  # 滤镜，边界加强（阈值更大）
+
+        # image.show()
         # 在内存生成图片
         from io import BytesIO
         f = BytesIO()
@@ -93,10 +119,22 @@ class ValidCodeImg:
 
 
 if __name__ == '__main__':
-    if not os.path.exists("./captcha"):
-        os.mkdir("./captcha")
-    for i in range(3000):
-        img = ValidCodeImg()
+    path = "./captcha_to_predict/"
+    if not os.path.exists(path):
+        os.mkdir(path)
+    for i in range(16):
+        img = ValidCodeImg(width=200, height=50,
+                           code_count=4, font_size=32,
+                           point_count=20, line_count=3, is_transform=False, is_filter=False,
+                           background_random=False, color_random=False,
+                           img_format='png')
         data, valid_str = img.getValidCodeImg()
-        f = open("./captcha/" + valid_str + '.png', 'wb')
+        f = open(path + valid_str.lower() + '.png', 'wb')
         f.write(data)
+    '''
+    img = ValidCodeImg(width=200, height=50,
+                       code_count=5, font_size=32,
+                       point_count=20, line_count=3, is_transform=True, is_filter=True,
+                       background_random=True, color_random=True,
+                       img_format='png')
+    img.getValidCodeImg()'''
