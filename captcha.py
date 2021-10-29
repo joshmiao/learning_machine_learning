@@ -206,7 +206,7 @@ model = build_model()
 model.summary()
 
 
-epochs = 40
+epochs = 100
 early_stopping_patience = 10
 # Add early stopping
 early_stopping = keras.callbacks.EarlyStopping(
