@@ -14,8 +14,7 @@ data_dir = Path("./captcha/")
 # Get list of all the images
 images = sorted(list(map(str, list(data_dir.glob("*.png")))))
 labels = [img.split(os.path.sep)[-1].split(".png")[0] for img in images]
-characters = list(set(char for label in labels for char in label))
-characters.sort()
+characters = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
 
 print("Number of images found: ", len(images))
 print("Number of labels found: ", len(labels))
@@ -26,8 +25,8 @@ print("Characters present: ", characters)
 batch_size = 16
 
 # Desired image dimensions
-img_width = 200
-img_height = 50
+img_width = 90
+img_height = 35
 
 # Factor by which the image is going to be downsampled
 # by the convolutional blocks. We will be using two
@@ -207,7 +206,7 @@ model = build_model()
 model.summary()
 
 
-epochs = 10
+epochs = 50
 early_stopping_patience = 10
 # Add early stopping
 early_stopping = keras.callbacks.EarlyStopping(
