@@ -118,6 +118,7 @@ for batch in train_dataset.take(1):
         ax[i // 4, i % 4].axis("off")
 plt.show()
 
+
 class CTCLayer(layers.Layer):
     def __init__(self, name=None):
         super().__init__(name=name)
@@ -206,7 +207,7 @@ model = build_model()
 model.summary()
 
 
-epochs = 100
+epochs = 10
 early_stopping_patience = 10
 # Add early stopping
 early_stopping = keras.callbacks.EarlyStopping(
@@ -243,8 +244,8 @@ def decode_batch_predictions(pred):
     return output_text
 
 
-prediction_model.save("prediction_model")
-model.save("model")
+model.save_weights("./model/model_weights")
+model.save("model_to_predict")
 
 #  Let's check results on some validation samples
 for batch in validation_dataset.take(1):
