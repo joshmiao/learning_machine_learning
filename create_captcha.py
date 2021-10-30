@@ -8,7 +8,7 @@ import random
 class ValidCodeImg:
     def __init__(self, width=200, height=50, code_count=5, font_size=32, point_count=20, line_count=3,
                  background_random=True, color_random=True, is_transform=True, is_filter=True,
-                 img_format='png'):
+                 font_dir=None, img_format='png'):
 
         """
         可以生成一个经过降噪后的随机验证码的图片
@@ -33,6 +33,7 @@ class ValidCodeImg:
         self.color_random = color_random
         self.is_transform = is_transform
         self.is_filter = is_filter
+        self.font_dir = font_dir
 
     @staticmethod
     def getRandomColor():
@@ -61,7 +62,7 @@ class ValidCodeImg:
         draw = ImageDraw.Draw(image)
 
         # 获取一个font字体对象参数是ttf的字体文件的目录，以及字体的大小
-        font = ImageFont.truetype("./msyh.ttc", size=self.font_size)
+        font = ImageFont.truetype(self.font_dir, size=self.font_size)
 
         temp = []
         for i in range(self.code_count):
@@ -70,9 +71,9 @@ class ValidCodeImg:
 
             # 在图片上一次写入得到的随机字符串,参数是：定位，字符串，颜色，字体
             if self.color_random:
-                draw.text((10 + i * 30, -2), random_char, self.getRandomColor(), font=font)
+                draw.text((10 + i * 15, random.randint(-2, 2)), random_char, self.getRandomColor(), font=font)
             else:
-                draw.text((10 + i * 25, -2), random_char, (0, 0, 0), font=font)
+                draw.text((10 + i * 15, random.randint(-2, 2)), random_char, (0, 0, 0), font=font)
             # 保存随机字符，以供验证用户输入的验证码是否正确时使用
             temp.append(random_char)
         valid_str = "".join(temp)
@@ -119,22 +120,27 @@ class ValidCodeImg:
 
 
 if __name__ == '__main__':
+    # path = "./captcha/"
     path = "./captcha_to_predict/"
     if not os.path.exists(path):
         os.mkdir(path)
-    for i in range(16):
-        img = ValidCodeImg(width=200, height=50,
-                           code_count=4, font_size=32,
-                           point_count=20, line_count=3, is_transform=False, is_filter=False,
-                           background_random=False, color_random=False,
+    for i in range(64):
+        img = ValidCodeImg(width=random.randint(80, 100), height=random.randint(30, 40),
+                           code_count=4, font_size=22,
+                           point_count=10, line_count=2,
+                           is_transform=random.choice([False, True]), is_filter=random.choice([False, True]),
+                           background_random=random.choice([False, True]), color_random=random.choice([False, True]),
+                           font_dir=random.choice(["./ARLRDBD.TTF", "./cambriab.ttf", "./courbd.ttf", "./bahnschrift.ttf", "./arial.ttf", "./ariblk.ttf", "./micross.ttf"]),
                            img_format='png')
         data, valid_str = img.getValidCodeImg()
         f = open(path + valid_str.lower() + '.png', 'wb')
         f.write(data)
     '''
-    img = ValidCodeImg(width=200, height=50,
-                       code_count=5, font_size=32,
-                       point_count=20, line_count=3, is_transform=True, is_filter=True,
-                       background_random=True, color_random=True,
+    img = ValidCodeImg(width=random.randint(80, 100), height=random.randint(30, 40),
+                       code_count=4, font_size=random.randint(22, 22),
+                       point_count=10, line_count=2,
+                       is_transform=random.choice([False, True]), is_filter=random.choice([False, True]),
+                       background_random=random.choice([False, True]), color_random=random.choice([False, True]),
+                       font_dir=random.choice(["./ARLRDBD.TTF", "./cambriab.ttf", "./courbd.ttf", "./bahnschrift.ttf", "./arial.ttf", "./ariblk.ttf", "./micross.ttf"]),
                        img_format='png')
     img.getValidCodeImg()'''
