@@ -15,8 +15,8 @@ print("Number of images found: ", len(images))
 
 
 batch_size = 16
-img_width = 200
-img_height = 50
+img_width = 90
+img_height = 35
 
 
 max_length = max([len(label) for label in labels])
@@ -120,10 +120,10 @@ for batch in validation_dataset.take(1):
         img = img.T
         title = f"Prediction: {pred_texts[i]}"
         if pred_texts[i] != orig_texts[i]:
-            title += " [FALSE]"
+            title += f" [{orig_texts[i]}]"
             ax[i // 4, i % 4].set_title(title, color="red")
         else:
-            ax[i // 4, i % 4].set_title(title)
+            ax[i // 4, i % 4].set_title(title, color="green")
         ax[i // 4, i % 4].imshow(img, cmap="gray")
         ax[i // 4, i % 4].axis("off")
 plt.show()
