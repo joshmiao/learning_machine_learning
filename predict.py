@@ -30,7 +30,7 @@ num_to_char = layers.StringLookup(
 )
 
 
-def split_data(images, labels, train_size=0, shuffle=True):
+def split_data(images, labels, shuffle=True):
     size = len(images)
     indices = np.arange(size)
     if shuffle:
@@ -69,9 +69,23 @@ validation_dataset = (
     .prefetch(buffer_size=tf.data.AUTOTUNE)
 )
 
+_, ax = plt.subplots(4, 4, figsize=(10, 5))
+for batch in validation_dataset.take(1):
+    images = batch["image"]
+    labels = batch["label"]
+    for i in range(3):
+        img = (images[i] * 255).numpy().astype("uint8")
+        label = tf.strings.reduce_join(num_to_char(labels[i])).numpy().decode("utf-8")
+        ax[i // 4, i % 4].imshow(img[:, :, 0].T, cmap="gray")
+        ax[i // 4, i % 4].set_title(label)
+        ax[i // 4, i % 4].axis("off")
+plt.show()
 
-model = tf.keras.models.load_model("model")
-prediction_model = tf.keras.models.load_model("prediction_model")
+
+model = tf.keras.models.load_model("model_to_predict")
+prediction_model = keras.models.Model(
+    model.get_layer(name="image").input, model.get_layer(name="dense2").output
+)
 
 
 def decode_batch_predictions(pred):
