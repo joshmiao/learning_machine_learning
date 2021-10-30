@@ -25,8 +25,8 @@ print("Characters present: ", characters)
 batch_size = 16
 
 # Desired image dimensions
-img_width = 200
-img_height = 50
+img_width = 90
+img_height = 35
 
 # Factor by which the image is going to be downsampled
 # by the convolutional blocks. We will be using two
