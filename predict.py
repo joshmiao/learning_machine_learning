@@ -73,7 +73,7 @@ _, ax = plt.subplots(4, 4, figsize=(10, 5))
 for batch in validation_dataset.take(1):
     images = batch["image"]
     labels = batch["label"]
-    for i in range(3):
+    for i in range(16):
         img = (images[i] * 255).numpy().astype("uint8")
         label = tf.strings.reduce_join(num_to_char(labels[i])).numpy().decode("utf-8")
         ax[i // 4, i % 4].imshow(img[:, :, 0].T, cmap="gray")
@@ -119,7 +119,11 @@ for batch in validation_dataset.take(1):
         img = (batch_images[i, :, :, 0] * 255).numpy().astype(np.uint8)
         img = img.T
         title = f"Prediction: {pred_texts[i]}"
+        if pred_texts[i] != orig_texts[i]:
+            title += " [FALSE]"
+            ax[i // 4, i % 4].set_title(title, color="red")
+        else:
+            ax[i // 4, i % 4].set_title(title)
         ax[i // 4, i % 4].imshow(img, cmap="gray")
-        ax[i // 4, i % 4].set_title(title)
         ax[i // 4, i % 4].axis("off")
 plt.show()
