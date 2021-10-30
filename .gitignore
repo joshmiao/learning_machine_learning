@@ -1,6 +1,6 @@
 /.idea/*
 /captcha/
 /model/
-/prediction_model/
 /captcha_to_predict/
 /model saved/
+/model_to_predict/
