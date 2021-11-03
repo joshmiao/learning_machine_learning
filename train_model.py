@@ -207,8 +207,8 @@ model.summary()
 model.load_weights("./model/model_weights")
 
 
-epochs = 30
-early_stopping_patience = 10
+epochs = 60
+early_stopping_patience = 20
 # Add early stopping
 early_stopping = keras.callbacks.EarlyStopping(
     monitor="val_loss", patience=early_stopping_patience, restore_best_weights=True
