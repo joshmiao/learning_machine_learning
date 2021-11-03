@@ -50,21 +50,16 @@ num_to_char = layers.StringLookup(
 
 
 def split_data(images, labels, train_size=0.9, shuffle=True):
-    # 1. Get the total size of the dataset
     size = len(images)
-    # 2. Make an indices array and shuffle it, if required
     indices = np.arange(size)
     if shuffle:
         np.random.shuffle(indices)
-    # 3. Get the size of training samples
     train_samples = int(size * train_size)
-    # 4. Split data into training and validation sets
     x_train, y_train = images[indices[:train_samples]], labels[indices[:train_samples]]
     x_valid, y_valid = images[indices[train_samples:]], labels[indices[train_samples:]]
     return x_train, x_valid, y_train, y_valid
 
 
-# Splitting data into training and validation sets
 x_train, x_valid, y_train, y_valid = split_data(np.array(images), np.array(labels))
 
 
