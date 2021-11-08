@@ -207,7 +207,7 @@ model.summary()
 model.load_weights("./model/model_weights")
 
 
-epochs = 60
+epochs = 120
 early_stopping_patience = 20
 # Add early stopping
 early_stopping = keras.callbacks.EarlyStopping(

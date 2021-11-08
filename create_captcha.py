@@ -33,7 +33,7 @@ class ValidCodeImg:
         self.color_random = color_random
         self.is_transform = is_transform
         self.is_filter = is_filter
-        self.font_dir = font_dir
+        self.font_dir = './captcha_fonts/' + font_dir
         self.is_show = is_show
 
 
@@ -125,23 +125,23 @@ class ValidCodeImg:
 
 
 if __name__ == '__main__':
-    # path = "./captcha/"
-    path = "./captcha_to_predict/"
+    path = "./captcha/"
+    # path = "./captcha_to_predict/"
     if not os.path.exists(path):
         os.mkdir(path)
-    for i in range(40):
+    for i in range(10):
         img = ValidCodeImg(width=random.randint(100, 100), height=random.randint(40, 40),
                            code_count=4, font_size=24,
                            point_count=10, line_count=2,
                            is_transform=random.choice([True]),
                            is_filter=random.choice([True]),
-                           background_random=random.choice([False]),
-                           color_random=random.choice([False]),
-                           font_dir=random.choice(["./ARLRDBD.TTF", "./cambriab.ttf",
-                                                   "./courbd.ttf", "./bahnschrift.ttf",
-                                                   "./arial.ttf", "./ariblk.ttf",
-                                                   "./micross.ttf", "./arialbi.ttf",
-                                                   "./consolaz.ttf"]),
+                           background_random=random.choice([True]),
+                           color_random=random.choice([True]),
+                           font_dir=random.choice(["ARLRDBD.TTF", "cambriab.ttf",
+                                                   "courbd.ttf", "bahnschrift.ttf",
+                                                   "arial.ttf", "ariblk.ttf",
+                                                   "micross.ttf", "arialbi.ttf",
+                                                   "consolaz.ttf"]),
                            img_format='png', is_show=False)
         data, valid_str = img.getValidCodeImg()
         f = open(path + valid_str.lower() + '.png', 'wb')
