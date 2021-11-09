@@ -121,3 +121,24 @@ validation_dataset = (
     .prefetch(buffer_size=tf.data.AUTOTUNE)
 )
 ```
+### 建立模型
+```python
+
+```
+### 利用模型进行预测
+```python
+
+```
+### 利用北理校园认证验证码测试模型在未训练的数据集上的准确度
+```python
+import requests
+
+url = "http://login.bit.edu.cn/authserver/getCaptcha.htl?" # 验证码生成url
+headers = {
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36'
+}
+for i in range(16):
+    img = requests.get(url) # 获取验证码
+    with open(str(i) + ".png", "wb") as f:
+        f.write(img.content) # 将验证码写入文件保存
+```
