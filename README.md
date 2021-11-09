@@ -129,7 +129,7 @@ validation_dataset = (
 ```python
 
 ```
-### 利用北理校园认证验证码测试模型在未训练的数据集上的准确度
+### 利用”北理统一身份认证“验证码测试模型在未训练的数据集上的准确度
 ```python
 import requests
 
