@@ -1,11 +1,11 @@
-#利用Tensorflow机器学习框架进行验证码识别
-##1. 项目简介
+# 利用Tensorflow机器学习框架进行验证码识别
+## 1. 项目简介
 
-##2. 系统环境
+## 2. 系统环境
 
->###Python解释器版本
+>### Python解释器版本
 >Python 3.9.7 (tags/v3.9.7:1016ef3, Aug 30 2021, 20:19:38) [MSC v.1929 64 bit (AMD64)] on win32
->###第三方库
+>### 第三方库
 >|库名称|版本|下载地址
 >|-----|----|----|
 >|Tensorflow|2.6.0|[下载Tensorflow==2.6.0](https://pypi.tuna.tsinghua.edu.cn/packages/fb/93/d5e3751a9ca3d159cbe498ef112e4bca35a07cedaae83e61038606e72edf/tensorflow-2.6.0-cp39-cp39-win_amd64.whl)|
@@ -15,7 +15,7 @@
 >|requests|2.26.0|[下载Tensorflow==2.26.0](https://pypi.tuna.tsinghua.edu.cn/packages/e7/01/3569e0b535fb2e4a6c384bdbed00c55b9d78b5084e0fb7f4d0bf523d7670/requests-2.26.0.tar.gz)|
 
 
-##3. 总体框架
+## 3. 总体框架
 ```
 │  create_captcha.py-----------创建训练图片
 │  create_model.py-------------创建模型
