@@ -1,9 +1,9 @@
 # 利用Tensorflow机器学习框架进行验证码识别
 ## 1. 项目简介
-
+验证码在
 ## 2. 系统环境
 
-### Python解释器版本
+### Python解释器、系统版本信息
 >Python 3.9.7 (tags/v3.9.7:1016ef3, Aug 30 2021, 20:19:38) [MSC v.1929 64 bit (AMD64)] on win32
 ### 第三方库
 >|库名称|版本|下载地址
@@ -69,78 +69,17 @@ data, valid_str = img.getValidCodeImg() # 创建验证码图片以及对应字�
 ```
 ### 输入数据预处理
 ```python
-char_to_num = layers.StringLookup(
-    vocabulary=list(characters), mask_token=None
-)
-num_to_char = layers.StringLookup(
-    vocabulary=char_to_num.get_vocabulary(), mask_token=None, invert=True
-)
-
-
-def split_data(images, labels, train_size=0.9, shuffle=True):
-    size = len(images)
-    indices = np.arange(size)
-    if shuffle:
-        np.random.shuffle(indices)
-    train_samples = int(size * train_size)
-    x_train, y_train = images[indices[:train_samples]], labels[indices[:train_samples]]
-    x_valid, y_valid = images[indices[train_samples:]], labels[indices[train_samples:]]
-    return x_train, x_valid, y_train, y_valid
-
-
-x_train, x_valid, y_train, y_valid = split_data(np.array(images), np.array(labels))
-
-
-def encode_single_sample(img_path, label):
-    img = tf.io.read_file(img_path)
-    img = tf.io.decode_png(img, channels=1)
-    img = tf.image.convert_image_dtype(img, tf.float32)
-    img = tf.image.resize(img, [img_height, img_width])
-    img = tf.transpose(img, perm=[1, 0, 2])
-    label = char_to_num(tf.strings.unicode_split(label, input_encoding="UTF-8"))
-    return {"image": img, "label": label}
-
-
-train_dataset = tf.data.Dataset.from_tensor_slices((x_train, y_train))
-train_dataset = (
-    train_dataset.map(
-        encode_single_sample, num_parallel_calls=tf.data.AUTOTUNE
-    )
-    .batch(batch_size)
-    .prefetch(buffer_size=tf.data.AUTOTUNE)
-)
-
-validation_dataset = tf.data.Dataset.from_tensor_slices((x_valid, y_valid))
-validation_dataset = (
-    validation_dataset.map(
-        encode_single_sample, num_parallel_calls=tf.data.AUTOTUNE
-    )
-    .batch(batch_size)
-    .prefetch(buffer_size=tf.data.AUTOTUNE)
-)
+def encode_single_sample(img_path, label): # 处理单张验证码图片
+    img = tf.io.read_file(img_path) # 读取图像
+    img = tf.io.decode_png(img, channels=1) # 解码并转换为灰度图片    
+    img = tf.image.convert_image_dtype(img, tf.float32) # 将图片数据转化为[0,1]区间内的float32变量
+    img = tf.image.resize(img, [img_height, img_width]) # 调整图片至预设大小
+    img = tf.transpose(img, perm=[1, 0, 2]) # 转置图像使图像的宽对应于时间维度
+    label = char_to_num(tf.strings.unicode_split(label, input_encoding="UTF-8")) #将验证码对于字符映射为数字
+    return {"image": img, "label": label}# 返回处理后的图片数据、标签数据元组
 ```
 ### 建立模型
 ```python
-class CTCLayer(layers.Layer):
-    def __init__(self, name=None):
-        super().__init__(name=name)
-        self.loss_fn = keras.backend.ctc_batch_cost
-
-    def call(self, y_true, y_pred):
-        batch_len = tf.cast(tf.shape(y_true)[0], dtype="int64")
-        
-        input_length = tf.cast(tf.shape(y_pred)[1], dtype="int64")
-        label_length = tf.cast(tf.shape(y_true)[1], dtype="int64")
-        
-        input_length = input_length * tf.ones(shape=(batch_len, 1), dtype="int64")
-        label_length = label_length * tf.ones(shape=(batch_len, 1), dtype="int64")
-        
-        loss = self.loss_fn(y_true, y_pred, input_length, label_length)
-        self.add_loss(loss)
-
-        return y_pred
-
-
 def build_model():
     input_img = layers.Input( # 创建输入层
         shape=(img_width, img_height, 1), name="image", dtype="float32"
@@ -186,7 +125,7 @@ def build_model():
     model = keras.models.Model( # 建立模型
         inputs=[input_img, labels], outputs=output, name="ocr_model_v1"
     )
-    opt = keras.optimizers.Adam() # 优化器
+    opt = keras.optimizers.Adam() # 创建优化器
     model.compile(optimizer=opt) # 编译模型并返回
     return model
 ```
@@ -201,7 +140,7 @@ def decode_batch_predictions(pred):
     for res in results: # 遍历输出结果获取预测文本
         res = tf.strings.reduce_join(num_to_char(res)).numpy().decode("utf-8")
         output_text.append(res)
-    return output_text
+    return output_text # 返回预测文本
 ```
 ### 利用”北理统一身份认证“验证码测试模型在未训练的数据集上的准确度
 ```python
