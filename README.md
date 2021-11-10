@@ -1,19 +1,22 @@
 # 利用Tensorflow机器学习框架进行验证码识别
 ## 1. 项目简介
-验证码在
+> 验证码（CAPTCHA）识别在网站中非常常见，是一种区分用户是计算机还是人的公共全自动程序，可以用于防止程序爬虫等功能。
+> 验证码的存在对于我们利用程序访问某些网站造成了困难，然而识别由于验证码对于图片处理的方式千变万化，因此并不存在通用的验证码识别软件。
+> 我们可以对于特定网站生成相似的验证码图像，利用机器学习OCR识别模型创建针对性的模型对于网站的验证码进行预测。
+> 整个过程基本是全自动化的，人力成本低，有较强的可行性。
 ## 2. 系统环境
 
 ### Python解释器、系统版本信息
->Python 3.9.7 (tags/v3.9.7:1016ef3, Aug 30 2021, 20:19:38) [MSC v.1929 64 bit (AMD64)] on win32
+> Python 3.9.7 (tags/v3.9.7:1016ef3, Aug 30 2021, 20:19:38) [MSC v.1929 64 bit (AMD64)] on win32
 ### 第三方库
->|库名称|版本|下载地址
->|-----|----|----|
->|Tensorflow|2.6.0|[下载Tensorflow==2.6.0](https://pypi.tuna.tsinghua.edu.cn/packages/fb/93/d5e3751a9ca3d159cbe498ef112e4bca35a07cedaae83e61038606e72edf/tensorflow-2.6.0-cp39-cp39-win_amd64.whl)|
->|numpy|1.19.5|[下载numpy==1.19.5](https://pypi.tuna.tsinghua.edu.cn/packages/bc/40/d6f7ba9ce5406b578e538325828ea43849a3dfd8db63d1147a257d19c8d1/numpy-1.19.5-cp39-cp39-win_amd64.whl)|
->|Pillow|8.4.0|[下载Pillow==8.4.0](https://pypi.tuna.tsinghua.edu.cn/packages/20/ec/15a263f2c65d71cf62aa767f774c2381077e07beb1e9309a94461ec1cd29/Pillow-8.4.0-cp39-cp39-win_amd64.whl)|
->|matplotlib|3.4.3|[下载matplotlib==3.4.3](https://pypi.tuna.tsinghua.edu.cn/packages/59/ea/1c00d9278c51d5f03276ac3f08773a13d93cbf2d722386ae8da083866697/matplotlib-3.4.3-cp39-cp39-win_amd64.whl)|
->|requests|2.26.0|[下载requests==2.26.0](https://pypi.tuna.tsinghua.edu.cn/packages/e7/01/3569e0b535fb2e4a6c384bdbed00c55b9d78b5084e0fb7f4d0bf523d7670/requests-2.26.0.tar.gz)|
-
+> |库名称|版本|下载地址
+> |-----|----|----|
+> |Tensorflow|2.6.0|[下载Tensorflow==2.6.0（通过清华大学镜像下载）](https://pypi.tuna.tsinghua.edu.cn/packages/fb/93/d5e3751a9ca3d159cbe498ef112e4bca35a07cedaae83e61038606e72edf/tensorflow-2.6.0-cp39-cp39-win_amd64.whl)|
+> |numpy|1.19.5|[下载numpy==1.19.5（通过清华大学镜像下载）](https://pypi.tuna.tsinghua.edu.cn/packages/bc/40/d6f7ba9ce5406b578e538325828ea43849a3dfd8db63d1147a257d19c8d1/numpy-1.19.5-cp39-cp39-win_amd64.whl)|
+> |Pillow|8.4.0|[下载Pillow==8.4.0（通过清华大学镜像下载）](https://pypi.tuna.tsinghua.edu.cn/packages/20/ec/15a263f2c65d71cf62aa767f774c2381077e07beb1e9309a94461ec1cd29/Pillow-8.4.0-cp39-cp39-win_amd64.whl)|
+> |matplotlib|3.4.3|[下载matplotlib==3.4.3（通过清华大学镜像下载）](https://pypi.tuna.tsinghua.edu.cn/packages/59/ea/1c00d9278c51d5f03276ac3f08773a13d93cbf2d722386ae8da083866697/matplotlib-3.4.3-cp39-cp39-win_amd64.whl)|
+> |requests|2.26.0|[下载requests==2.26.0（通过清华大学镜像下载）](https://pypi.tuna.tsinghua.edu.cn/packages/e7/01/3569e0b535fb2e4a6c384bdbed00c55b9d78b5084e0fb7f4d0bf523d7670/requests-2.26.0.tar.gz)|
+> **注意安装时要保证keras版本为2.6.0否则可能导致程序无法运行，可安装Tensoflow后使用`pip install keras==2.6.0`命令。*
 
 ## 3. 项目文件总体框架
 ```
@@ -51,7 +54,8 @@
             variables.data-00000-of-00001
             variables.index
 ```
-## 4. 关键代码说明（具体实现参考源代码）
+## 4. 项目原理、特色介绍
+## 5. 关键代码说明（具体实现参考源代码）
 ### 创建训练用的验证码图片
 ```python
 img = ValidCodeImg(width=random.randint(100, 100), height=random.randint(40, 40),# 设置验证码宽和高为100像素
@@ -155,3 +159,6 @@ for i in range(16):
     with open(str(i) + ".png", "wb") as f:
         f.write(img.content) # 将验证码写入文件保存
 ```
+## 6. 运行效果展示
+
+## 7. 完成度自我评价以及总结
