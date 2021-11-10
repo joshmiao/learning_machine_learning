@@ -1,23 +1,24 @@
 # 利用Tensorflow机器学习框架进行验证码识别
 ## 1. 项目简介
 > 验证码（CAPTCHA）识别在网站中非常常见，是一种区分用户是计算机还是人的公共全自动程序，可以用于防止程序爬虫等功能。
-> 验证码的存在对于我们利用程序访问某些网站造成了困难，然而识别由于验证码对于图片处理的方式千变万化，因此并不存在通用的验证码识别软件。
-> 我们可以对于特定网站生成相似的验证码图像，利用机器学习OCR识别模型创建针对性的模型对于网站的验证码进行预测。
+> 验证码的存在对于我们利用程序访问某些网站造成了困难，由于验证码中人为添加的干扰元素，使得机器对于验证码的识别非常有难度。再加上不同字体的影响，验证码识别程序的通用性非常差，无法完成通用的验证码识别。
+>
+> 我们可以对于特定网站生成相似的验证码图像，利用机器学习Tensorflow框架实现OCR识别模型创建针对性的模型对于网站的验证码进行预测。
 > 整个过程基本是全自动化的，人力成本低，有较强的可行性。
 ## 2. 系统环境
 
 ### Python解释器、系统版本信息
-> Python 3.9.7 (tags/v3.9.7:1016ef3, Aug 30 2021, 20:19:38) [MSC v.1929 64 bit (AMD64)] on win32
+> `Python 3.9.7 (tags/v3.9.7:1016ef3, Aug 30 2021, 20:19:38) [MSC v.1929 64 bit (AMD64)] on win32`
 ### 第三方库
 > |库名称|版本|下载地址
 > |-----|----|----|
-> |Tensorflow|2.6.0|[下载Tensorflow==2.6.0（通过清华大学镜像下载）](https://pypi.tuna.tsinghua.edu.cn/packages/fb/93/d5e3751a9ca3d159cbe498ef112e4bca35a07cedaae83e61038606e72edf/tensorflow-2.6.0-cp39-cp39-win_amd64.whl)|
-> |numpy|1.19.5|[下载numpy==1.19.5（通过清华大学镜像下载）](https://pypi.tuna.tsinghua.edu.cn/packages/bc/40/d6f7ba9ce5406b578e538325828ea43849a3dfd8db63d1147a257d19c8d1/numpy-1.19.5-cp39-cp39-win_amd64.whl)|
-> |Pillow|8.4.0|[下载Pillow==8.4.0（通过清华大学镜像下载）](https://pypi.tuna.tsinghua.edu.cn/packages/20/ec/15a263f2c65d71cf62aa767f774c2381077e07beb1e9309a94461ec1cd29/Pillow-8.4.0-cp39-cp39-win_amd64.whl)|
-> |matplotlib|3.4.3|[下载matplotlib==3.4.3（通过清华大学镜像下载）](https://pypi.tuna.tsinghua.edu.cn/packages/59/ea/1c00d9278c51d5f03276ac3f08773a13d93cbf2d722386ae8da083866697/matplotlib-3.4.3-cp39-cp39-win_amd64.whl)|
-> |requests|2.26.0|[下载requests==2.26.0（通过清华大学镜像下载）](https://pypi.tuna.tsinghua.edu.cn/packages/e7/01/3569e0b535fb2e4a6c384bdbed00c55b9d78b5084e0fb7f4d0bf523d7670/requests-2.26.0.tar.gz)|
+> |Tensorflow|`2.6.0`|[下载Tensorflow==2.6.0（通过清华大学镜像下载）](https://pypi.tuna.tsinghua.edu.cn/packages/fb/93/d5e3751a9ca3d159cbe498ef112e4bca35a07cedaae83e61038606e72edf/tensorflow-2.6.0-cp39-cp39-win_amd64.whl)|
+> |numpy|`1.19.5`|[下载numpy==1.19.5（通过清华大学镜像下载）](https://pypi.tuna.tsinghua.edu.cn/packages/bc/40/d6f7ba9ce5406b578e538325828ea43849a3dfd8db63d1147a257d19c8d1/numpy-1.19.5-cp39-cp39-win_amd64.whl)|
+> |Pillow|`8.4.0`|[下载Pillow==8.4.0（通过清华大学镜像下载）](https://pypi.tuna.tsinghua.edu.cn/packages/20/ec/15a263f2c65d71cf62aa767f774c2381077e07beb1e9309a94461ec1cd29/Pillow-8.4.0-cp39-cp39-win_amd64.whl)|
+> |matplotlib|`3.4.3`|[下载matplotlib==3.4.3（通过清华大学镜像下载）](https://pypi.tuna.tsinghua.edu.cn/packages/59/ea/1c00d9278c51d5f03276ac3f08773a13d93cbf2d722386ae8da083866697/matplotlib-3.4.3-cp39-cp39-win_amd64.whl)|
+> |requests|`2.26.0`|[下载requests==2.26.0（通过清华大学镜像下载）](https://pypi.tuna.tsinghua.edu.cn/packages/e7/01/3569e0b535fb2e4a6c384bdbed00c55b9d78b5084e0fb7f4d0bf523d7670/requests-2.26.0.tar.gz)|
 > 
-> **注意安装时要保证keras版本为2.6.0否则可能导致程序无法运行，可安装Tensoflow后使用`pip install keras==2.6.0`命令。*
+> **注意安装时要保证 `keras` 版本为 `2.6.0` 否则可能导致程序无法运行，可安装 `Tensoflow` 后使用 `pip install keras==2.6.0` 命令。*
 
 ## 3. 项目文件总体框架
 ```
@@ -57,14 +58,25 @@
 ```
 ## 4. 项目流程、技术细节介绍
 ### 创建训练所需验证码图像
+> 验证码的生成有以下几个方面的考虑：验证码字体样式、图片字体大小，水平和竖直排列、字体颜色、背景颜色、噪点（个数、颜色）、干扰线（条数、颜色）、图片扭曲、字母边界增强等。
+>
+> 利用Python图像库 `PIL` 以及随机库 `random` ，可以基本满足对于验证码图片的生成。图片大小设置为 `100*40` 像素，包含4个待识别待识别的大小写字母、数字；其中字体样式选择与目标识别验证码相似的多款字体；水平竖直排列在一定范围内随机；字体颜色、背景颜色采用随机的RGB数值；噪点数和干扰线数设置为10个、2条，颜色随机；对于最后生成的图片进行随机的扭曲以及滤镜处理。
 
-### 预处理输入数据
+### 将样本、标签进行预处理和归一化处理
+>对于深度学习网络而言，输入的数据需要转化成实数组成的向量。对于图片，统一大小后进行灰度处理，然后将每个像素点的RGB值映射到`[0,1]`区间的实数内；对于标签，将`0~9,𝑎~𝑧`作为字符集将验证码字母映射为数字。
+>
+>说明：这里对于图片暂时不进行包括分割、去除噪音等繁琐的预处理过程，直接输入。考虑到一般网站的验证码不考虑大小写且较大的字符集对于模型的拟合有更大挑战，这里仅考虑小写字符和数字作为输出（输入包含大写字母）。
 
-### 建立模型
+### 构建深度学习神经网络模型
+>这里利用 `TensorFlow` 框架以及相应api构建了一个简单的OCR识别模型，包括了CNN(输入层、Conv2D、数据最大池化技术)、RNN循环、优化器、CTC损失函数、输出层。这里对于模型的具体构建不进行讨论，仅对网络的基本参数例如 `batch_size` （批尺寸）、 `epoch` （训练次数）、 `early_stopping_patience` (提前停止拟合的最大容忍次数)进行调整。
+>
+>保存模型由于技术原因只能保存数据以及丢失了训练所需要的函数的模型（不能再次训练但是可以利用其进行预测）。
 
-### 训练模型
+### 利用样本和标签对于模型进行拟合
+>使用 `model.fit` 函数对于预处理好的图像和标签进行拟合。
 
-### 利用模型拟合数据
+### 利用简单的爬虫下载相应网站的少量验证码，手动标签用于测试
+>使用 `requests` 库下载北京理工大学统一身份认证验证码图片（仅适用于针对性训练版本）。
 
 ## 5. 关键代码说明（具体实现参考源代码）
 ### 创建训练用的验证码图片
