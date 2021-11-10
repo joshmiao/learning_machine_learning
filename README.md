@@ -20,7 +20,7 @@
 │  create_captcha.py-----------创建训练图片
 │  create_model.py-------------创建模型
 │  dir.txt---------------------目录框架
-│  get_captcha.py--------------爬虫下载验证码（北理网站）
+│  get_captcha.py--------------爬虫下载验证码（北理统一身份认证）
 │  predict.py------------------预测验证码
 │  README.md-------------------说明文件
 │  train_model.py--------------训练模型
@@ -55,18 +55,16 @@
 ### 创建训练用的验证码图片
 ```python
 img = ValidCodeImg(width=random.randint(100, 100), height=random.randint(40, 40),# 设置验证码宽和高为100像素
-                           code_count=4, font_size=24, # 验证码字符个数和字体大小
-                           point_count=10, line_count=2, # 验证码干扰点和线数目
-                           is_transform=random.choice([True]),# 是否添加扭曲效果
-                           is_filter=random.choice([True]),# 是否添加滤镜效果
-                           background_random=random.choice([True]),# 背景颜色是否随机
-                           color_random=random.choice([True]),# 字体颜色是否随机
-                           font_dir=random.choice(["ARLRDBD.TTF", "cambriab.ttf", # 验证码使用的字体
-                                                   "courbd.ttf", "bahnschrift.ttf",
-                                                   "arial.ttf", "ariblk.ttf",
-                                                   "micross.ttf", "arialbi.ttf",
-                                                   "consolaz.ttf"]),
-                           img_format='png', is_show=False) # 选择验证码图片格式以及是否展示生成的图片
+                   code_count=4, font_size=24, # 验证码字符个数和字体大小
+                   point_count=10, line_count=2, # 验证码干扰点和线数目
+                   is_transform=random.choice([True]),# 是否添加扭曲效果
+                   is_filter=random.choice([True]),# 是否添加滤镜效果
+                   background_random=random.choice([True]),# 背景颜色是否随机
+                   color_random=random.choice([True]),# 字体颜色是否随机
+                   font_dir=random.choice(["ARLRDBD.TTF", "cambriab.ttf", "courbd.ttf", # 验证码使用的字体
+                                           "bahnschrift.ttf","arial.ttf", "ariblk.ttf",
+                                           "micross.ttf", "arialbi.ttf","consolaz.ttf"]),
+                   img_format='png', is_show=False) # 选择验证码图片格式以及是否展示生成的图片
 data, valid_str = img.getValidCodeImg() # 创建验证码图片以及对应字符串
 ```
 ### 输入数据预处理
@@ -144,12 +142,12 @@ class CTCLayer(layers.Layer):
 
 
 def build_model():
-    input_img = layers.Input(
+    input_img = layers.Input( # 创建输入层
         shape=(img_width, img_height, 1), name="image", dtype="float32"
     )
     labels = layers.Input(name="label", shape=(None,), dtype="float32")
 
-    x = layers.Conv2D(
+    x = layers.Conv2D(  # 二维卷积层1
         32,
         (3, 3),
         activation="relu",
@@ -159,7 +157,7 @@ def build_model():
     )(input_img)
     x = layers.MaxPooling2D((2, 2), name="pool1")(x)
 
-    x = layers.Conv2D(
+    x = layers.Conv2D( # 二维卷积层2
         64,
         (3, 3),
         activation="relu",
@@ -169,30 +167,41 @@ def build_model():
     )(x)
     x = layers.MaxPooling2D((2, 2), name="pool2")(x)
 
+    # 池化技术
     new_shape = ((img_width // 4), (img_height // 4) * 64)
     x = layers.Reshape(target_shape=new_shape, name="reshape")(x)
     x = layers.Dense(64, activation="relu", name="dense1")(x)
     x = layers.Dropout(0.2)(x)
-
+    
+    # 循环神经网络
     x = layers.Bidirectional(layers.LSTM(128, return_sequences=True, dropout=0.25))(x)
     x = layers.Bidirectional(layers.LSTM(64, return_sequences=True, dropout=0.25))(x)
 
-    x = layers.Dense(
+    x = layers.Dense( # 输出层
         len(char_to_num.get_vocabulary()) + 1, activation="softmax", name="dense2"
     )(x)
 
-    output = CTCLayer(name="ctc_loss")(labels, x)
+    output = CTCLayer(name="ctc_loss")(labels, x) # 添加损失函数
 
-    model = keras.models.Model(
+    model = keras.models.Model( # 建立模型
         inputs=[input_img, labels], outputs=output, name="ocr_model_v1"
     )
-    opt = keras.optimizers.Adam()
+    opt = keras.optimizers.Adam() # 优化器
     model.compile(optimizer=opt) # 编译模型并返回
     return model
 ```
 ### 利用模型进行预测
 ```python
-
+def decode_batch_predictions(pred):
+    input_len = np.ones(pred.shape[0]) * pred.shape[1]
+    results = keras.backend.ctc_decode(pred, input_length=input_len, greedy=True)[0][0][ #利用贪心搜索获取最佳路径
+        :, :max_length
+    ]
+    output_text = []
+    for res in results: # 遍历输出结果获取预测文本
+        res = tf.strings.reduce_join(num_to_char(res)).numpy().decode("utf-8")
+        output_text.append(res)
+    return output_text
 ```
 ### 利用”北理统一身份认证“验证码测试模型在未训练的数据集上的准确度
 ```python
