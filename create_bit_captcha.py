@@ -77,11 +77,11 @@ class ValidCodeImg:
 
 
 if __name__ == '__main__':
-    path = "./captcha/"
-    # path = "./captcha_to_predict/"
+    # path = "./captcha/"
+    path = "./captcha_to_predict/"
     if not os.path.exists(path):
         os.mkdir(path)
-    for i in range(5000):
+    for i in range(1000):
         img = ValidCodeImg()
         data, valid_str = img.getValidCodeImg()
         f = open(path + valid_str.lower() + '.png', 'wb')

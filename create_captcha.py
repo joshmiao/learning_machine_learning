@@ -129,7 +129,7 @@ if __name__ == '__main__':
     path = "./captcha_to_predict/"
     if not os.path.exists(path):
         os.mkdir(path)
-    for i in range(160):
+    for i in range(1600):
         img = ValidCodeImg(width=random.randint(100, 100), height=random.randint(40, 40),
                            code_count=4, font_size=24,
                            point_count=10, line_count=2,
