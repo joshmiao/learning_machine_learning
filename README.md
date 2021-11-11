@@ -22,14 +22,18 @@
 
 ## 3. 项目文件总体框架
 ```
-│  create_captcha.py-----------创建训练图片
+│  create_bit_captcha.py-------创建北京理工大学相似验证码图像
+│  create_captcha.py-----------创建通用验证码图像
 │  create_model.py-------------创建模型
 │  dir.txt---------------------目录框架
-│  get_captcha.py--------------爬虫下载验证码（北理统一身份认证）
+│  get_captcha.py--------------爬虫下载验证码（北京理工大学统一身份认证）
 │  predict.py------------------预测验证码
 │  README.md-------------------说明文件
-│  train_model.py--------------训练模型
+│  train_model.py--------------训练模型 
 │  
+├─bit_captcha------------------北京理工大学统一身份认证验证码（爬虫下载手动标记）
+│      ......
+│
 ├─captcha_fonts----------------验证码字体文件集合
 │      arial.ttf
 │      arialbi.ttf
@@ -42,19 +46,49 @@
 │      micross.ttf
 │      msyh.ttc
 │      
-├─model------------------------模型数据（不可用于预测，可载入模型继续训练）
-│      checkpoint
-│      model_weights.data-00000-of-00001
-│      model_weights.index
-│      
-└─model_to_predict-------------完整已训练的模型（可用于预测）
-    │  keras_metadata.pb
-    │  saved_model.pb
-    │  
-    ├─assets
-    └─variables
-            variables.data-00000-of-00001
-            variables.index
+├─model saved-----------------保存的模型
+│  ├─model_80x30_bit_captcha--北京理工大学统一身份认证验证码识别模型
+│  │  ├─model-----------------模型数据（不可用于预测，可载入模型继续训练）
+│  │  │      checkpoint
+│  │  │      model_weights.data-00000-of-00001
+│  │  │      model_weights.index
+│  │  │      
+│  │  └─model_to_predict------完整已训练的模型（可用于预测）
+│  │      │  keras_metadata.pb
+│  │      │  saved_model.pb
+│  │      │  
+│  │      ├─assets
+│  │      └─variables
+│  │              variables.data-00000-of-00001
+│  │              variables.index
+│  │              
+│  └─model_90x35_general-------通用验证码识别模型
+│      ├─model-----------------模型数据（不可用于预测，可载入模型继续训练）
+│      │      checkpoint
+│      │      model_weights.data-00000-of-00001
+│      │      model_weights.index
+│      │      
+│      └─model_to_predict------完整已训练的模型（可用于预测）
+│          │  keras_metadata.pb
+│          │  saved_model.pb
+│          │  
+│          ├─assets
+│          └─variables
+│                  variables.data-00000-of-00001
+│                  variables.index
+│                  
+└─results_image----------------成果展示
+        1.PNG
+        2.PNG
+        3.PNG
+        4.PNG
+        5.PNG
+        6.PNG
+        7.PNG
+        bit_captcha_created.PNG
+        captcha.PNG
+        real_bit_captcha.PNG
+        利用TensorFlow进行验证码识别.pptx
 ```
 ## 4. 项目流程、技术细节介绍
 ### i. 创建训练所需验证码图像
