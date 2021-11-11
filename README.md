@@ -187,7 +187,7 @@ for i in range(16):
 > 通用性验证码识别样本
 > 
 ![captcha](results_image/captcha.PNG)
->北京理工大学统一身份认证验证码
+>北京理工大学统一身份认证验证码（利用爬虫下载）
 > 
 ![bit](results_image/real_bit_captcha.PNG)
 >模拟北京理工大学统一身份认证验证码自动生成的样本
