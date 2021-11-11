@@ -37,7 +37,7 @@ class ValidCodeImg:
 
     def getValidCodeImg(self):
         # 获取一个Image对象，参数分别是RGB模式。宽150，高30，随机颜色
-        image = Image.new('RGB', (self.width, self.height), (229, 238, 243))
+        image = Image.new('RGB', (self.width, self.height), (232, 236, 248))
         # 获取一个画笔对象，将图片对象传过去
         draw = ImageDraw.Draw(image)
 
@@ -81,7 +81,7 @@ if __name__ == '__main__':
     # path = "./captcha_to_predict/"
     if not os.path.exists(path):
         os.mkdir(path)
-    for i in range(30000):
+    for i in range(5000):
         img = ValidCodeImg()
         data, valid_str = img.getValidCodeImg()
         f = open(path + valid_str.lower() + '.png', 'wb')

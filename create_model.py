@@ -25,8 +25,8 @@ print("Characters present: ", characters)
 batch_size = 16
 
 # Desired image dimensions
-img_width = 90
-img_height = 35
+img_width = 80
+img_height = 30
 
 # Factor by which the image is going to be downsampled
 # by the convolutional blocks. We will be using two
@@ -202,7 +202,7 @@ model.summary()
 
 
 epochs = 50
-early_stopping_patience = 10
+early_stopping_patience = 15
 # Add early stopping
 early_stopping = keras.callbacks.EarlyStopping(
     monitor="val_loss", patience=early_stopping_patience, restore_best_weights=True
