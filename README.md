@@ -116,34 +116,37 @@
 ## 5. 关键代码说明（具体实现参考源代码）
 ### 创建训练用的验证码图片
 ```python
+# 创建随机验证码图片和相应字符串
 img = ValidCodeImg(width=random.randint(100, 100), height=random.randint(40, 40),# 设置验证码宽和高为100像素
-                   code_count=4, font_size=24, # 验证码字符个数和字体大小
-                   point_count=10, line_count=2, # 验证码干扰点和线数目
-                   is_transform=random.choice([True]),# 是否添加扭曲效果
-                   is_filter=random.choice([True]),# 是否添加滤镜效果
-                   background_random=random.choice([True]),# 背景颜色是否随机
-                   color_random=random.choice([True]),# 字体颜色是否随机
-                   font_dir=random.choice(["ARLRDBD.TTF", "cambriab.ttf", "courbd.ttf", # 验证码使用的字体
+                   code_count=4, font_size=24,  # 验证码字符个数和字体大小
+                   point_count=10, line_count=2,  # 验证码干扰点和线数目
+                   is_transform=random.choice([True]),  # 是否添加扭曲效果
+                   is_filter=random.choice([True]),  # 是否添加滤镜效果
+                   background_random=random.choice([True]),  # 背景颜色是否随机
+                   color_random=random.choice([True]),  # 字体颜色是否随机
+                   font=random.choice(["ARLRDBD.TTF", "cambriab.ttf", "courbd.ttf",  # 验证码使用的字体
                                            "bahnschrift.ttf","arial.ttf", "ariblk.ttf",
                                            "micross.ttf", "arialbi.ttf","consolaz.ttf"]),
-                   img_format='png', is_show=False) # 选择验证码图片格式以及是否展示生成的图片
-data, valid_str = img.getValidCodeImg() # 创建验证码图片以及对应字符串
+                   img_format='png', is_show=False)  # 选择验证码图片格式以及是否展示生成的图片
+data, valid_str = img.getValidCodeImg()  # 创建验证码图片以及对应字符串
 ```
 ### 输入数据预处理
 ```python
-def encode_single_sample(img_path, label): # 处理单张验证码图片
-    img = tf.io.read_file(img_path) # 读取图像
-    img = tf.io.decode_png(img, channels=1) # 解码并转换为灰度图片    
-    img = tf.image.convert_image_dtype(img, tf.float32) # 将图片数据转化为[0,1]区间内的float32变量
-    img = tf.image.resize(img, [img_height, img_width]) # 调整图片至预设大小
-    img = tf.transpose(img, perm=[1, 0, 2]) # 转置图像使图像的宽对应于时间维度
-    label = char_to_num(tf.strings.unicode_split(label, input_encoding="UTF-8")) #将验证码对于字符映射为数字
-    return {"image": img, "label": label}# 返回处理后的图片数据、标签数据元组
+# 处理单张验证码图片
+def encode_single_sample(img_path, label):
+    img = tf.io.read_file(img_path)  # 读取图像
+    img = tf.io.decode_png(img, channels=1)  # 解码并转换为灰度图片    
+    img = tf.image.convert_image_dtype(img, tf.float32)  # 将图片数据转化为[0,1]区间内的float32变量
+    img = tf.image.resize(img, [img_height, img_width])  # 调整图片至预设大小
+    img = tf.transpose(img, perm=[1, 0, 2])  # 转置图像使图像的宽对应于时间维度
+    label = char_to_num(tf.strings.unicode_split(label, input_encoding="UTF-8"))  #将验证码对于字符映射为数字
+    return {"image": img, "label": label}  # 返回处理后的图片数据、标签数据元组
 ```
 ### 建立模型
 ```python
+# 建立OCR识别模型
 def build_model():
-    input_img = layers.Input( # 创建输入层
+    input_img = layers.Input(  # 创建输入层
         shape=(img_width, img_height, 1), name="image", dtype="float32"
     )
     labels = layers.Input(name="label", shape=(None,), dtype="float32")
@@ -158,7 +161,7 @@ def build_model():
     )(input_img)
     x = layers.MaxPooling2D((2, 2), name="pool1")(x)
 
-    x = layers.Conv2D( # 二维卷积层2
+    x = layers.Conv2D(  # 二维卷积层2
         64,
         (3, 3),
         activation="relu",
@@ -178,31 +181,31 @@ def build_model():
     x = layers.Bidirectional(layers.LSTM(128, return_sequences=True, dropout=0.25))(x)
     x = layers.Bidirectional(layers.LSTM(64, return_sequences=True, dropout=0.25))(x)
 
-    x = layers.Dense( # 输出层
+    x = layers.Dense(  # 输出层
         len(char_to_num.get_vocabulary()) + 1, activation="softmax", name="dense2"
     )(x)
 
-    output = CTCLayer(name="ctc_loss")(labels, x) # 添加损失函数
+    output = CTCLayer(name="ctc_loss")(labels, x)  # 添加损失函数
 
-    model = keras.models.Model( # 建立模型
+    model = keras.models.Model(  # 建立模型
         inputs=[input_img, labels], outputs=output, name="ocr_model_v1"
     )
-    opt = keras.optimizers.Adam() # 创建优化器
-    model.compile(optimizer=opt) # 编译模型并返回
+    opt = keras.optimizers.Adam()  # 创建优化器
+    model.compile(optimizer=opt)  # 编译模型并返回
     return model
 ```
 ### 利用模型进行预测
 ```python
 def decode_batch_predictions(pred):
     input_len = np.ones(pred.shape[0]) * pred.shape[1]
-    results = keras.backend.ctc_decode(pred, input_length=input_len, greedy=True)[0][0][ #利用贪心搜索获取最佳路径
+    results = keras.backend.ctc_decode(pred, input_length=input_len, greedy=True)[0][0][  #利用贪心搜索获取最佳路径
         :, :max_length
     ]
     output_text = []
-    for res in results: # 遍历输出结果获取预测文本
+    for res in results:  # 遍历输出结果获取预测文本
         res = tf.strings.reduce_join(num_to_char(res)).numpy().decode("utf-8")
         output_text.append(res)
-    return output_text # 返回预测文本
+    return output_text  # 返回预测文本
 ```
 ### 利用”北理统一身份认证“验证码测试模型在*未训练*的数据集上的准确度
 ```python
@@ -213,9 +216,9 @@ headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36'
 }
 for i in range(16):
-    img = requests.get(url) # 获取验证码
+    img = requests.get(url)  # 获取验证码
     with open(str(i) + ".png", "wb") as f:
-        f.write(img.content) # 将验证码写入文件保存
+        f.write(img.content)  # 将验证码写入文件保存
 ```
 ## 6. 运行效果展示
 > 通用性验证码识别样本
