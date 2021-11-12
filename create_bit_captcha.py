@@ -1,10 +1,12 @@
-from PIL import Image, ImageFilter
+from PIL import Image
 from PIL import ImageDraw
 from PIL import ImageFont
 import os
 import random
 
-
+"""
+本程序用于生成模拟北京理工大学统一身份认证验证码，程序细节注释参考create_captcha.py
+"""
 class ValidCodeImg:
     def __init__(self, width=80, height=30, code_count=4, font_size=26, point_count=0, line_count=5,
                  font_dir="arialbi.ttf", img_format='png', is_show=False):
@@ -36,26 +38,17 @@ class ValidCodeImg:
         return random_char
 
     def getValidCodeImg(self):
-        # 获取一个Image对象，参数分别是RGB模式。宽150，高30，随机颜色
         image = Image.new('RGB', (self.width, self.height), (232, 236, 248))
-        # 获取一个画笔对象，将图片对象传过去
         draw = ImageDraw.Draw(image)
-
-        # 获取一个font字体对象参数是ttf的字体文件的目录，以及字体的大小
         font = ImageFont.truetype(self.font_dir, size=self.font_size)
 
         temp = []
         for i in range(self.code_count):
-            # 循环5次，获取5个随机字符串
             random_char = self.getRandomStr()
-
-            # 在图片上一次写入得到的随机字符串,参数是：定位，字符串，颜色，字体
             draw.text((i * 20, -4), random_char, self.getRandomColor(), font=font)
-            # 保存随机字符，以供验证用户输入的验证码是否正确时使用
             temp.append(random_char)
         valid_str = "".join(temp)
 
-        # 划线
         for i in range(self.line_count):
             x1 = random.randint(0, self.width)
             x2 = random.randint(0, self.width)
@@ -66,7 +59,7 @@ class ValidCodeImg:
         if self.is_show:
             image.show()
             print(valid_str)
-        # 在内存生成图片
+
         from io import BytesIO
         f = BytesIO()
         image.save(f, self.img_format)

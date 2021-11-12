@@ -241,8 +241,12 @@ for batch in validation_dataset.take(1):
         img = (batch_images[i, :, :, 0] * 255).numpy().astype(np.uint8)
         img = img.T
         title = f"Prediction: {pred_texts[i]}"
+        if pred_texts[i] != orig_texts[i]:
+            title += f" [{orig_texts[i]}]"
+            ax[i // 4, i % 4].set_title(title, color="red")
+        else:
+            ax[i // 4, i % 4].set_title(title, color="green")
         ax[i // 4, i % 4].imshow(img, cmap="gray")
-        ax[i // 4, i % 4].set_title(title)
         ax[i // 4, i % 4].axis("off")
 plt.show()
 
