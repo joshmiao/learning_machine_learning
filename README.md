@@ -93,11 +93,11 @@
 ```
 ## 4. 程序运行方法
 ### i. 利用已训练的模型进行预测
-> 配置好环境后，从`./model_saved/`目录下选择适合的模型，并把相应模型的 `model_to_predict` 文件夹放置于根目录下，根据模型修改 `predict.py` 文件的`img_width` `img_height` 参数。
+> 配置好环境后，从`./model_saved/`目录下选择适合的模型，并把相应模型的 `model_to_predict` 文件夹放置于根目录下，根据模型所标注的大小修改 `predict.py` 文件的`img_width` `img_height` 参数。
 > 
 > 将需要预测的验证码图片放入 `./captcha_to_prodict/` 目录下，格式为 `.png` ，图片名称可以修改为相应的验证码以便查看识别正确与否，运行 `predict.py` 即可。
-### ii. 继续训练模型或者创建模型
-> 配置好环境后，从`./model_saved/`目录下选择待训练的模型（或不需要模型），并把相应模型的 `model` 文件夹放置于根目录下，根据模型修改 `train_model.py` （或 `creat_model.py` ）文件的`img_width` `img_height` 参数。
+### ii. 继续训练模型（或者创建模型）
+> 配置好环境后，从`./model_saved/`目录下选择待训练的模型（或不需要模型），并把相应模型的 `model` 文件夹放置于根目录下，根据模型所标注的大小修改 `train_model.py` （或 `creat_model.py` ）文件的`img_width` `img_height` 参数。
 > 
 > 将训练所需的验证码图片放入 `./captcha/` 目录下，图片名称为相应的验证码，格式为 `.png` ，运行 `train_model.py` （或 `creat_model.py` ）即可，亦可根据需要修改训练相应参数。
 ## 5. 项目流程、技术细节介绍
